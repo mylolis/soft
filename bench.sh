@@ -1083,7 +1083,7 @@ Function_BestTrace_Full() {
 	Run_BestTrace "13.107.136.9" "TCP" "30" "Onedrive"
 	Run_BestTrace "ios.magi-reco.com" "TCP" "30" "AWS CDN"
 	Run_BestTrace "download.microsoft.com" "TCP" "30" "微软更新服务器"
-	Run_BestTrace "104.18.62.71" "TCP" "30" "CloudFlare-2"
+	Run_BestTrace "104.28.22.172" "TCP" "30" "CloudFlare-1"
 	Run_BestTrace "104.18.62.71" "TCP" "30" "CloudFlare-2"
 	Run_BestTrace "github.com" "TCP" "30" "Github"
     fi
