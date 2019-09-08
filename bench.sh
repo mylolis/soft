@@ -20,8 +20,8 @@
 # #------------------------------------------------------------------#
 #
 # 使用方法 (任选其一):
-# (1) wget -qO- https://raw.githubusercontent.com/kotori-bgt/soft/master/bench.sh | bash
-# (2) curl -fsSL https://raw.githubusercontent.com/kotori-bgt/soft/master/bench.sh | bash
+# (1) wget -qO- https://raw.githubusercontent.com/kotori-bgt/soft/master/bench.sh | bash -s full
+# (2) curl -fsSL https://raw.githubusercontent.com/kotori-bgt/soft/master/bench.sh | bash -s full
 #
 # === 全局定义 =====================================
 
