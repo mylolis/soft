@@ -1,6 +1,6 @@
 IP-CIDR,161.202.0.0/16,BanG Dream
 IP-CIDR,169.56.24.0/24,BanG Dream
 HOST-SUFFIX,exitgames.com,BanG Dream
-HOST-SUFFIX,d2ktlshvcuasnf.cloudfront.net,Proxy
-HOST-SUFFIX,api.star.craftegg.jp,Proxy
-HOST-SUFFIX,api.smbeat.jp,Proxy
+HOST-SUFFIX,d2ktlshvcuasnf.cloudfront.net,GMedia
+HOST-SUFFIX,api.star.craftegg.jp,GMedia
+HOST-SUFFIX,api.smbeat.jp,GMedia
