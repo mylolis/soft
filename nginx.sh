@@ -36,7 +36,9 @@ nginx_124='1.24.0'
 nginx_125='1.25.5'
 nginx_126='1.26.3'
 nginx_127='1.27.4'
-nginx_128='1.28.0'
+nginx_128='1.28.3'
+nginx_129='1.29.8'
+nginx_130='1.30.0'
 openresty='1.25.3.2'
 openresty127='1.27.1.2'
 
@@ -130,6 +132,14 @@ fi
 
 if [ -z "${cpuCore}" ]; then
     cpuCore="1"
+fi
+
+if [ -f "/etc/os-release" ];then
+    . /etc/os-release
+    OS_V=${VERSION_ID%%.*}
+    if [ "${ID}" == "alinux" ] && [[ "${OS_V}" =~ ^(4)$ ]];then
+        yum install perl-FindBin -y
+    fi
 fi
 
 Error_Send(){
@@ -247,7 +257,7 @@ Install_LuaJIT2(){
     ldconfig
 }
 Install_LuaJIT() {
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         Install_LuaJIT2
         return
     fi
@@ -303,10 +313,19 @@ Download_Src() {
     cd src
 
     if [ -z "${GMSSL}" ]; then
+        TLSv13_NGINX=$(echo ${nginxVersion} | tr -d '.' | cut -c 1-3)
+        if [ "${TLSv13_NGINX}" -ge "115" ] && [ "${TLSv13_NGINX}" != "181" ]; then
+            opensslVer="1.1.1w"
+        else
+            opensslVer="1.0.2u"
+        fi
 
-        wget -O openssl.tar.gz https://ghfast.top/https://github.com/openssl/openssl/releases/download/openssl-3.6.0/openssl-3.6.0.tar.gz
+        if [ "$version" == "1.29" ] || [ "$version" == "1.30" ];then
+            opensslVer="4.0.0"
+        fi
+        wget -O openssl.tar.gz https://github.com/openssl/openssl/releases/download/openssl-4.0.0/openssl-4.0.0.tar.gz
         tar -xvf openssl.tar.gz
-        mv openssl-3.6.0 openssl
+        mv openssl-${opensslVer} openssl
         rm -f openssl.tar.gz
     else
         wget -O GmSSL-master.zip ${download_Url}/src/GmSSL-master.zip
@@ -339,7 +358,7 @@ Download_Src() {
 
     #lua_nginx_module
     LuaModVer="0.10.13"
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] ||  [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] ||  [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         LuaModVer="0.10.24"
     fi
     wget -c -O lua-nginx-module-${LuaModVer}.zip ${download_Url}/src/lua-nginx-module-${LuaModVer}.zip
@@ -412,7 +431,7 @@ Install_Configure() {
     #     ENABLE_STICKY=""
 	# fi
 
-    if [ "$version" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ];then
+    if [ "$version" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         ENABLE_HTTP3="--with-http_v3_module"
     fi
 
@@ -582,7 +601,7 @@ Install_Nginx() {
         #Error_Send
     fi
 
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         wget -c -O lua-resty-core-0.1.26.zip ${download_Url}/src/lua-resty-core-0.1.26.zip
         unzip lua-resty-core-0.1.26.zip
         cd lua-resty-core-0.1.26
@@ -629,7 +648,7 @@ Update_Nginx() {
     mv -f ${Setup_Path}/sbin/nginx ${Setup_Path}/sbin/nginxBak
     \cp -rfp ${Setup_Path}/src/objs/nginx ${Setup_Path}/sbin/
     if [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
-        if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] ;then
+        if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
             wget -c -O lua-resty-core-0.1.26.zip ${download_Url}/src/lua-resty-core-0.1.26.zip
             unzip lua-resty-core-0.1.26.zip
             cd lua-resty-core-0.1.26
@@ -650,7 +669,7 @@ Update_Nginx() {
     /etc/init.d/nginx start
     rm -rf ${Setup_Path}/src
     nginx -v
-
+    md5sum ${Setup_Path}/sbin/nginx > /www/server/panel/data/nginx_md5.pl
     echo "${nginxVersion}" >${Setup_Path}/version.pl
     rm -f ${Setup_Path}/version_check.pl
     if [ "${version}" == "tengine" ]; then
@@ -690,7 +709,7 @@ server {
     }
 EOF
     echo "" >/www/server/nginx/conf/enable-php-00.conf
-    for phpV in 52 53 54 55 56 70 71 72 73 74 75 80 81 82 83 84; do
+    for phpV in 52 53 54 55 56 70 71 72 73 74 75 80 81 82 83 84 85; do
         cat >${Setup_Path}/conf/enable-php-${phpV}.conf <<EOF
     location ~ [^/]\.php(/|$)
     {
@@ -765,7 +784,7 @@ EOF
     #fi
 
     PHPVersion=""
-    for phpVer in 52 53 54 55 56 70 71 72 73 74 80 81 82 83 84; do
+    for phpVer in 52 53 54 55 56 70 71 72 73 74 80 81 82 83 84 85; do
         if [ -d "/www/server/php/${phpVer}/bin" ]; then
             PHPVersion=${phpVer}
         fi
@@ -785,13 +804,13 @@ EOF
         wget -O /www/server/nginx/html/index.html ${download_Url}/error/index_en_nginx.html -T 20
         chmod 644 /www/server/nginx/html/index.html
         wget -O /www/server/panel/vhost/nginx/0.default.conf ${download_Url}/conf/nginx/en.0.default.conf
-        for phpV in 52 53 54 55 56 70 71 72 73 74 75 80 81 82 83; do
+        for phpV in 52 53 54 55 56 70 71 72 73 74 75 80 81 82 83 84 85; do
             wget -O ${Setup_Path}/conf/enable-php-${phpV}-wpfastcgi.conf ${download_Url}/install/wordpress_conf/nginx/enable-php-${phpV}-wpfastcgi.conf
         done
     fi
     
     wget -O /etc/init.d/nginx ${download_Url}/init/nginx.init -T 20
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         if [ -d "/www/server/btwaf" ];then
             rm -rf /www/server/btwaf/ngx
             rm -rf /www/server/btwaf/resty
@@ -809,7 +828,7 @@ EOF
             sed -i '/lua_package_path/s|^|#|' /www/server/nginx/conf/nginx.conf
         fi
     fi
-    if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
+    if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
         HTTP_POST_CHECK=$(cat /www/server/nginx/conf/fastcgi.conf|grep "HTTP_HOST")
         if [ -z "${HTTP_POST_CHECK}" ];then
             echo "fastcgi_param  HTTP_HOST          \$host;" >> /www/server/nginx/conf/fastcgi.conf
@@ -929,6 +948,12 @@ else
     '1.28')
         nginxVersion=${nginx_128}
         ;;
+    '1.29')
+        nginxVersion=${nginx_129}
+        ;;
+    '1.30')
+        nginxVersion=${nginx_130}
+        ;;
     '1.8')
         nginxVersion=${nginx_108}
         ;;
@@ -961,12 +986,6 @@ else
         Service_Add
         /etc/init.d/nginx start
 
-        echo "安装基础网站流量统计程序..."
-        wget -O site_new_total.sh ${download_Url}/site_total/install.sh &> /dev/null 
-        bash site_new_total.sh &> /dev/null
-        rm -f site_new_total.sh
-        echo "安装基础网站流量统计程序完成"
-
         #免费试用网站监控报表
         # if [ ! -f "/www/server/panel/plugin/monitor/info.json" ] && [ -f "/usr/bin/btpython" ];then
         #     if [ -z "${AA_PANEL_CHECK}" ];then
@@ -975,9 +994,14 @@ else
         #         nohup /usr/bin/btpython plugin_install.py monitor 4.1.1 >/dev/null 2>&1 &
         #     fi
         # fi
+        echo "安装基础网站流量统计程序..."
+        wget -O site_new_total.sh ${download_Url}/site_total/install.sh &> /dev/null 
+        bash site_new_total.sh &> /dev/null
+        rm -f site_new_total.sh
+        echo "安装基础网站流量统计程序完成"
 
     elif [ "${actionType}" == "update" ]; then
-        if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
+        if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
             Install_LuaJIT
         fi
         Download_Src
