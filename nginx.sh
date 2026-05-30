@@ -38,7 +38,8 @@ nginx_126='1.26.3'
 nginx_127='1.27.4'
 nginx_128='1.28.3'
 nginx_129='1.29.8'
-nginx_130='1.30.0'
+nginx_130='1.30.2'
+nginx_131='1.31.1'
 openresty='1.25.3.2'
 openresty127='1.27.1.2'
 
@@ -181,6 +182,7 @@ System_Lib() {
         ${PM} install ${Pack} -y
         yum install zlib-devel -y
         yum -y install gcc gcc-c++ autoconf automake
+        yum install -y perl perl-IPC-Cmd perl-Time-Piece
         yum reinstall gd gd-devel -y 2>&1 >> /tmp/pack_i.pl
         ls /usr/include/gd.h /usr/lib64/libgd.so.3  2>&1 |tee /tmp/gd_i.pl
         wget -O fix_install.sh $download_Url/tools/fix_install.sh
@@ -199,6 +201,7 @@ System_Lib() {
         apt-get install libgd-dev -y 2>&1 >> /tmp/pack_i.pl
         apt-get install libxml2-dev -y 2>&1 >> /tmp/pack_i.pl
         apt-get install zlib1g-dev -y 
+        apt-get install libcrypt-dev -y
     fi
 
 }
@@ -257,7 +260,7 @@ Install_LuaJIT2(){
     ldconfig
 }
 Install_LuaJIT() {
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         Install_LuaJIT2
         return
     fi
@@ -358,7 +361,7 @@ Download_Src() {
 
     #lua_nginx_module
     LuaModVer="0.10.13"
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] ||  [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] ||  [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         LuaModVer="0.10.24"
     fi
     wget -c -O lua-nginx-module-${LuaModVer}.zip ${download_Url}/src/lua-nginx-module-${LuaModVer}.zip
@@ -431,7 +434,7 @@ Install_Configure() {
     #     ENABLE_STICKY=""
 	# fi
 
-    if [ "$version" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "$version" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "openresty127" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         ENABLE_HTTP3="--with-http_v3_module"
     fi
 
@@ -601,7 +604,7 @@ Install_Nginx() {
         #Error_Send
     fi
 
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         wget -c -O lua-resty-core-0.1.26.zip ${download_Url}/src/lua-resty-core-0.1.26.zip
         unzip lua-resty-core-0.1.26.zip
         cd lua-resty-core-0.1.26
@@ -648,7 +651,7 @@ Update_Nginx() {
     mv -f ${Setup_Path}/sbin/nginx ${Setup_Path}/sbin/nginxBak
     \cp -rfp ${Setup_Path}/src/objs/nginx ${Setup_Path}/sbin/
     if [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ];then
-        if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+        if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] ||  [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
             wget -c -O lua-resty-core-0.1.26.zip ${download_Url}/src/lua-resty-core-0.1.26.zip
             unzip lua-resty-core-0.1.26.zip
             cd lua-resty-core-0.1.26
@@ -810,7 +813,7 @@ EOF
     fi
     
     wget -O /etc/init.d/nginx ${download_Url}/init/nginx.init -T 20
-    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "${version}" == "1.23" ] || [ "${version}" == "1.24" ] || [ "${version}" == "tengine" ] || [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         if [ -d "/www/server/btwaf" ];then
             rm -rf /www/server/btwaf/ngx
             rm -rf /www/server/btwaf/resty
@@ -828,7 +831,7 @@ EOF
             sed -i '/lua_package_path/s|^|#|' /www/server/nginx/conf/nginx.conf
         fi
     fi
-    if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+    if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
         HTTP_POST_CHECK=$(cat /www/server/nginx/conf/fastcgi.conf|grep "HTTP_HOST")
         if [ -z "${HTTP_POST_CHECK}" ];then
             echo "fastcgi_param  HTTP_HOST          \$host;" >> /www/server/nginx/conf/fastcgi.conf
@@ -876,6 +879,15 @@ Uninstall_Nginx() {
     [ -f "${Setup_Path}/rpm.pl" ] && yum remove bt-$(cat ${Setup_Path}/rpm.pl) -y
     [ -f "${Setup_Path}/deb.pl" ] && apt-get remove bt-$(cat ${Setup_Path}/deb.pl) -y
     pkill -9 nginx
+
+    if [ -f "${Setup_Path}/conf/nginx.conf" ];then
+        if [ ! -d "/www/backup/file_history/www/server/nginx/conf/nginx.conf" ];then
+            mkdir -p /www/backup/file_history/www/server/nginx/conf/nginx.conf
+        fi
+        \cp -rpa ${Setup_Path}/conf/nginx.conf /www/backup/file_history/www/server/nginx/conf/nginx.conf/$(date +%s)
+    fi
+
+
     rm -rf ${Setup_Path}
     rm -rf /www/server/btwaf/ngx
     rm -rf /www/server/btwaf/resty
@@ -954,6 +966,9 @@ else
     '1.30')
         nginxVersion=${nginx_130}
         ;;
+    '1.31')
+        nginxVersion=${nginx_131}
+        ;;
     '1.8')
         nginxVersion=${nginx_108}
         ;;
@@ -1001,7 +1016,7 @@ else
         echo "安装基础网站流量统计程序完成"
 
     elif [ "${actionType}" == "update" ]; then
-        if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ];then
+        if [ "${version}" == "1.25" ] || [ "${version}" == "1.26" ] || [ "${version}" == "1.27" ] || [ "${version}" == "1.28" ] || [ "${version}" == "1.29" ] || [ "${version}" == "1.30" ] || [ "${version}" == "1.31" ];then
             Install_LuaJIT
         fi
         Download_Src
